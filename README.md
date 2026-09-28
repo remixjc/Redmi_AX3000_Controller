@@ -1,123 +1,127 @@
 # Redmi AX3000 Controller
 
-A macOS desktop app to monitor and control your **Redmi Router X3000** (AX3000 series) — and any other Xiaomi / Redmi router running MiWiFi firmware — right from your Mac.
+[![GitHub stars](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fapi.github.com%2Frepos%2Fremixjc%2FRedmi_AX3000_Controller&query=stargazers_count&style=flat-square&label=Stars&color=brightgreen)](https://github.com/remixjc/Redmi_AX3000_Controller/stargazers)
 
-It talks to your router over the MiWiFi LuCI HTTP API on your LAN, shows every connected device with live speeds, and lets you block/unblock devices, rename them, and reboot the router — no cloud, no account required.
+[English](README.en.md) | **简体中文**
 
-![Screenshot](screenshot.png)
+一款运行在 macOS 上的桌面软件：连接你的 **Redmi 路由器 X3000（AX3000 系列）**，以及其他运行 MiWiFi 固件的小米/红米路由器，实时监控所有连接设备的信息与网速，并可直接对设备进行控制。
 
-## Features
+软件通过局域网内的 MiWiFi LuCI HTTP 接口与路由器通信，展示每台设备的实时速率，支持拉黑/解黑设备、修改设备名、重启路由器——**不依赖任何云端服务，无需注册账号**。
 
-**Real-time monitoring**
+![界面截图](screenshot.png)
 
-- WAN download / upload speed and cumulative traffic, plotted on a live chart (last 300 samples)
-- Online device count, total known devices, router uptime, CPU & memory usage
-- Per-device: name, IP, MAC, wired/wireless & band, live up/down speed, traffic, online duration
+## 功能特性
 
-**Device control**
+**实时监控**
 
-- Block / unblock devices (MAC address filtering — cut a device off the internet or restore it)
-- Rename device notes
-- One-click router reboot (with confirmation)
+- WAN 总下载 / 上传速度与累计流量，实时曲线图（最近 300 个采样点）
+- 在线设备数、历史累计设备数、路由器运行时间、CPU / 内存占用
+- 每台设备：名称、IP、MAC、有线/无线与频段、实时上下行速度、累计流量、在线时长
 
-**Other**
+**设备控制**
 
-- Configurable polling interval (1–10 s)
-- Open the router's web admin page
-- Admin password stored in the macOS Keychain, never written to disk in plaintext (fallback documented below)
+- 拉黑 / 解除拉黑设备（MAC 地址过滤——禁止或恢复设备上网）
+- 修改设备备注名称
+- 一键重启路由器（带二次确认）
 
-## Supported Routers
+**其他**
 
-Built on the generic MiWiFi LuCI HTTP API used across Xiaomi / Redmi firmware. **Redmi Router X3000 (AX3000 series, RA81) is natively supported**; Xiaomi AX3000T / AX1800 / Mi Router Pro and similar models also work.
+- 刷新间隔可调（1s–10s）
+- 打开路由器网页后台
+- 管理密码存入 macOS 钥匙串（Keychain），不明文落盘（回退方案见安全说明）
 
-Default admin address: `192.168.31.1` (or `miwifi.com`).
+## 支持的路由器
 
-## Requirements
+基于小米/红米 MiWiFi 固件的通用 LuCI HTTP API 开发。**Redmi 路由器 X3000（AX3000 系列，RA81）原生支持**；小米 AX3000T / AX1800 / 小米路由器 Pro 等型号同样适用。
+
+默认管理地址：`192.168.31.1`（或 `miwifi.com`）。
+
+## 环境要求
 
 - macOS
-- Python 3.10+ (a `.venv` with pinned dependencies is used; auto-created on first launch)
+- Python 3.10+（项目使用自带 `.venv` 虚拟环境与锁定依赖，首次运行自动创建）
 
-## Quick Start
+## 快速开始
 
 ```bash
 git clone git@github.com:remixjc/Redmi_AX3000_Controller.git
 cd Redmi_AX3000_Controller
 
-# Option A — double-click the launcher (auto-creates .venv and installs deps on first run)
+# 方式一：双击「启动.command」（首次运行自动创建 .venv 并安装依赖）
 ./启动.command
 
-# Option B — run manually
+# 方式二：终端手动运行
 python3 -m venv .venv
 .venv/bin/pip install -r requirements.txt
 .venv/bin/python app.py
 ```
 
-On first launch the connection dialog appears:
+首次启动会弹出「连接设置」：
 
-1. **Router address** — default `192.168.31.1` (your Mac must be on the same LAN; wired is most reliable)
-2. **Username** — default `admin`
-3. **Password** — your router admin password (if forgotten, use the hardware reset button to factory-reset the router)
-4. Click **Test Connection**, then **Save & Connect**
+1. **路由器地址**：默认 `192.168.31.1`（电脑需与路由器在同一局域网，有线连接最稳妥）
+2. **用户名**：默认 `admin`
+3. **密码**：路由器网页后台登录密码（忘记密码需用硬件复位键恢复出厂）
+4. 点击「测试连接」确认，再「保存并连接」
 
-## FAQ
+## 常见问题
 
-| Issue | Resolution |
+| 问题 | 处理 |
 |---|---|
-| "Cannot reach router" | Confirm the Mac is on the same LAN and the address is correct; prefer a wired connection |
-| "Not a recognized MiWiFi router" | The address is not a Xiaomi/Redmi router, or the login page differs |
-| "Login failed / wrong password" | Password is wrong or was changed; after a router reset, reconfigure the app |
-| Slow refresh | Increase the polling interval in Settings |
-| Device still has internet after blocking | Some firmware takes ~1 min to apply; reconnect the device after blocking |
-| Remote access | This app is LAN-only; remote use requires port-forwarding/VPN at your own security risk |
+| 提示「无法访问路由器」 | 确认电脑与路由器在同一局域网、地址正确；有线连接最稳妥 |
+| 提示「不是可识别的 MiWiFi 路由器」 | 该地址不是小米/红米路由器，或登录页结构异常 |
+| 提示「登录失败/密码错误」 | 密码错误或路由器后台密码已修改；重置路由器后需重新配置 |
+| 刷新慢 | 在「设置」里调大刷新间隔 |
+| 某设备「拉黑」后仍能上网 | 个别固件对已连接设备生效有约 1 分钟延迟，可先重连设备再拉黑 |
+| 想远程控制 | 本软件仅支持局域网内控制；远程需自行配置端口映射/VPN，并评估安全风险 |
 
-## Security Notes
+## 安全说明
 
-- The admin password is stored via the macOS Keychain (`security add-generic-password`). If the system blocks Keychain writes, the app falls back to storing it in `config.json` (local plaintext — keep the file private; it is git-ignored).
-- The app talks to your router's local HTTP admin interface only — it never connects to any cloud service.
-- Block/reboot operations modify router state and are always double-confirmed in the UI.
+- 管理密码通过 macOS 钥匙串保存（`security add-generic-password`）；若系统策略拦截钥匙串写入，会回退存到 `config.json`（本地明文——请妥善保管该文件，它已在 `.gitignore` 中排除）。
+- 软件只在局域网内访问路由器 HTTP 管理接口，不连接任何云端。
+- 拉黑 / 重启属于对路由器状态的修改操作，界面均做了二次确认。
 
-## Testing
+## 测试
 
-Two test suites run against a built-in **mock router** (no real hardware needed):
+内置 **Mock 路由器**，无需真实硬件即可运行两套测试：
 
 ```bash
-.venv/bin/python tests/test_mock_router.py        # protocol-level suite (24 assertions)
-.venv/bin/python tests/test_mock_router.py --serve 18080   # persistent demo server
-.venv/bin/python tests/test_app_backend.py        # app backend end-to-end (18 assertions)
+.venv/bin/python tests/test_mock_router.py        # 协议层测试（24 项断言）
+.venv/bin/python tests/test_mock_router.py --serve 18080   # 常驻演示服务
+.venv/bin/python tests/test_app_backend.py        # 应用后端端到端（18 项断言）
 ```
 
-The mock verifies the login signature flow, device parsing (including float-string fields real firmware returns), and block/unblock/rename/reboot request bodies, plus wrong-password handling.
+Mock 覆盖登录签名流程、设备解析（含真实固件返回的浮点字符串字段）、拉黑/解黑/改名/重启请求体，以及错误密码场景。
 
-## Project Structure
+## 项目结构
 
 ```
 router/
-├── app.py                 # Desktop app entry (pywebview window + polling + control logic)
-├── router_api.py          # MiWiFi router protocol client (login, devices, control)
-├── ui/                    # Frontend (HTML/CSS/JS + local ECharts)
+├── app.py                 # 桌面应用入口（pywebview 窗口 + 轮询 + 控制逻辑）
+├── router_api.py          # MiWiFi 路由器协议客户端（登录、设备、控制）
+├── ui/                    # 前端界面（HTML/CSS/JS + 本地 ECharts）
 │   └── vendor/echarts.min.js
 ├── tests/
-│   ├── test_mock_router.py   # Mock router service + protocol tests
-│   └── test_app_backend.py   # Headless app backend tests
-├── 启动.command           # Double-click launcher
-├── config.json            # Generated at runtime (git-ignored)
+│   ├── test_mock_router.py   # Mock 路由器服务 + 协议测试
+│   └── test_app_backend.py   # 无头后端测试
+├── 启动.command           # 双击启动器
+├── config.json            # 运行时生成（已 git 忽略）
 └── requirements.txt
 ```
 
-## How It Works (for developers)
+## 技术说明（开发者）
 
-**Login flow (new firmware):** `GET /cgi-bin/luci/web` → extract `key` and `deviceId` → build `nonce` → sign password as `sha1(nonce + sha1(password + key))` → `POST /cgi-bin/luci/api/xqsystem/login` → use the returned `token` (stok) in `;stok=<token>/` for all subsequent API calls.
+**登录流程（新固件）：** `GET /cgi-bin/luci/web` 抓取 `key` 与 `deviceId` → 构造 `nonce` → 密码签名 `sha1(nonce + sha1(password + key))` → `POST /cgi-bin/luci/api/xqsystem/login` 获取 `token`（stok）→ 后续所有接口携带 `;stok=<token>/`。
 
-**Core endpoints:**
+**核心接口：**
 
-| Endpoint | Purpose |
+| 接口 | 用途 |
 |---|---|
-| `api/misystem/devicelist` | Device list (name / IP / online state) |
-| `api/misystem/status` | WAN speeds + per-device speed/traffic |
-| `api/xqnetwork/wifi_macfilter_info` + `set_mac_filter` | Block / unblock (`authority.wan` / `wan=0|1`) |
-| `api/xqsystem/set_device_nickname` | Rename device |
-| `api/xqsystem/reboot` | Reboot router |
+| `api/misystem/devicelist` | 设备列表（名称 / IP / 在线状态） |
+| `api/misystem/status` | WAN 速度 + 每设备速度/流量 |
+| `api/xqnetwork/wifi_macfilter_info` + `set_mac_filter` | 拉黑 / 解黑（`authority.wan` / `wan=0|1`） |
+| `api/xqsystem/set_device_nickname` | 设备改名 |
+| `api/xqsystem/reboot` | 重启路由器 |
 
-## Disclaimer
+## 免责声明
 
-This project is unofficial. It is built from community-reverse-engineered MiWiFi HTTP APIs and has **no affiliation with Xiaomi / Redmi**. API behavior may change with firmware updates.
+本项目为**非官方项目**，基于社区逆向整理的 MiWiFi HTTP 接口开发，与小米/红米公司**无任何关联**；接口行为可能随固件更新而变化。
