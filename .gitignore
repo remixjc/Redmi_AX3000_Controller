@@ -1,0 +1,12 @@
+# Python 虚拟环境（体积大，不入库）
+.venv/
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+
+# 本地配置（含路由器管理密码，绝不入库）
+config.json
+
+# macOS 系统文件
+.DS_Store

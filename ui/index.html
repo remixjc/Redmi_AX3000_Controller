@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redmi X3000 路由器控制台</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <!-- ======================= 顶部栏 ======================= -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">📡</div>
+      <div>
+        <div class="brand-title">Redmi X3000 路由器控制台</div>
+        <div class="brand-sub" id="router-info">未连接</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="status-pill" id="status-pill"><span class="dot"></span><span id="status-text">未连接</span></div>
+      <label class="interval-label">刷新
+        <select id="interval-select">
+          <option value="1">1s</option>
+          <option value="2" selected>2s</option>
+          <option value="3">3s</option>
+          <option value="5">5s</option>
+          <option value="10">10s</option>
+        </select>
+      </label>
+      <button class="btn ghost" id="btn-reconnect" style="display:none">重新连接</button>
+      <button class="btn ghost" id="btn-settings">设置</button>
+    </div>
+  </header>
+
+  <div class="error-banner" id="error-banner" style="display:none"></div>
+
+  <!-- ======================= 统计卡片 ======================= -->
+  <section class="stats">
+    <div class="card stat">
+      <div class="stat-label">总下载速度</div>
+      <div class="stat-value down" id="stat-down">--</div>
+      <div class="stat-sub">累计 <span id="stat-down-total">--</span></div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">总上传速度</div>
+      <div class="stat-value up" id="stat-up">--</div>
+      <div class="stat-sub">累计 <span id="stat-up-total">--</span></div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">在线设备</div>
+      <div class="stat-value" id="stat-online">--</div>
+      <div class="stat-sub">历史累计 <span id="stat-all">--</span> 台</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">已拉黑设备</div>
+      <div class="stat-value blocked" id="stat-blocked">--</div>
+      <div class="stat-sub">点击可解黑</div>
+    </div>
+    <div class="card stat">
+      <div class="stat-label">路由器运行</div>
+      <div class="stat-value" id="stat-uptime">--</div>
+      <div class="stat-sub">CPU <span id="stat-cpu">--</span> · 内存 <span id="stat-mem">--</span></div>
+    </div>
+  </section>
+
+  <!-- ======================= 实时网速曲线 ======================= -->
+  <section class="card chart-card">
+    <div class="card-head">
+      <h2>实时网速（WAN）</h2>
+      <span class="chart-note" id="chart-note">等待数据…</span>
+    </div>
+    <div id="speed-chart"></div>
+  </section>
+
+  <!-- ======================= 设备列表 ======================= -->
+  <section class="card devices-card">
+    <div class="card-head">
+      <h2>连接设备 <span class="count-badge" id="device-count">0</span></h2>
+      <div class="device-actions">
+        <button class="btn ghost small" id="btn-refresh">手动刷新</button>
+        <button class="btn ghost small" id="btn-open-web">打开路由器后台</button>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table class="device-table">
+        <thead>
+          <tr>
+            <th>设备</th>
+            <th>连接</th>
+            <th>IP 地址</th>
+            <th>MAC 地址</th>
+            <th>下载</th>
+            <th>上传</th>
+            <th>累计流量</th>
+            <th>在线时长</th>
+            <th>状态</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="device-body">
+          <tr><td colspan="10" class="empty">正在连接路由器…</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ======================= 设置弹窗 ======================= -->
+  <div class="modal-mask" id="settings-modal" style="display:none">
+    <div class="modal">
+      <div class="modal-head">
+        <h2>连接设置</h2>
+        <button class="modal-close" id="btn-close-settings">×</button>
+      </div>
+      <div class="modal-body">
+        <label>路由器管理地址
+          <input type="text" id="set-host" placeholder="192.168.31.1">
+        </label>
+        <label>用户名
+          <input type="text" id="set-username" placeholder="admin">
+        </label>
+        <label>管理密码
+          <input type="password" id="set-password" placeholder="路由器后台密码">
+        </label>
+        <label>刷新间隔（秒）
+          <input type="number" id="set-interval" min="1" max="30" value="2">
+        </label>
+        <div class="test-result" id="test-result"></div>
+      </div>
+      <div class="modal-foot">
+        <button class="btn ghost" id="btn-test">测试连接</button>
+        <button class="btn primary" id="btn-save">保存并连接</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= 改名弹窗 ======================= -->
+  <div class="modal-mask" id="rename-modal" style="display:none">
+    <div class="modal small">
+      <div class="modal-head">
+        <h2>修改设备名称</h2>
+        <button class="modal-close" id="btn-close-rename">×</button>
+      </div>
+      <div class="modal-body">
+        <label>设备 MAC：<span class="mono" id="rename-mac"></span></label>
+        <label>新名称
+          <input type="text" id="rename-name" placeholder="例如：客厅电视">
+        </label>
+      </div>
+      <div class="modal-foot">
+        <button class="btn ghost" id="btn-cancel-rename">取消</button>
+        <button class="btn primary" id="btn-confirm-rename">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================= 重启确认 ======================= -->
+  <div class="modal-mask" id="reboot-modal" style="display:none">
+    <div class="modal small">
+      <div class="modal-head"><h2>重启路由器</h2></div>
+      <div class="modal-body">
+        <p>确认要重启路由器吗？所有设备将短暂断网，重启大约需要 1-2 分钟。</p>
+      </div>
+      <div class="modal-foot">
+        <button class="btn ghost" id="btn-cancel-reboot">取消</button>
+        <button class="btn danger" id="btn-confirm-reboot">确认重启</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="vendor/echarts.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
